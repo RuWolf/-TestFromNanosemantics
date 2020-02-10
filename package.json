@@ -1,0 +1,29 @@
+{
+  "name": "-testfromnanosemantics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "server": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RuWolf/-TestFromNanosemantics.git"
+  },
+  "author": "Rudolf <rudolf.bexshtedt@mail.ru>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RuWolf/-TestFromNanosemantics/issues"
+  },
+  "homepage": "https://github.com/RuWolf/-TestFromNanosemantics#readme",
+  "dependencies": {
+    "config": "^3.2.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.8.11"
+  },
+  "devDependencies": {
+    "concurrently": "^5.1.0",
+    "nodemon": "^2.0.2"
+  }
+}
