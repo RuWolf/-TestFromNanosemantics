@@ -2,10 +2,6 @@ const {Router} = require('express');
 const router = Router();
 const fetch = require('node-fetch');
 
-router.get('/',(req,res)=>{
-  console.log('errerer')
-})
-
 router.post('/init', async (req, res) => {
   const response = await fetch("https://biz.nanosemantics.ru/api/bat/nkd/json/Chat.init", {
     headers: {
@@ -22,7 +18,6 @@ router.post('/init', async (req, res) => {
 
 router.post('/request', async (req, res) => {
   const {cuid, text} = req.body;
-  // console.log(req.body);
   const response = await fetch("https://biz.nanosemantics.ru/api/bat/nkd/json/Chat.request", {
     headers: {
       "Content-Type": "application/json"
@@ -34,9 +29,7 @@ router.post('/request', async (req, res) => {
     })
   });
   let result = await response.json();
-  res.json({result})
+  res.json({response:result.result.text.value});
 });
-
-
 
 module.exports = router;

@@ -7,5 +7,4 @@ function App() {
    <Chat/>
   );
 }
-
 export default App;

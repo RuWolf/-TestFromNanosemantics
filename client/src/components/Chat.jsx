@@ -3,17 +3,23 @@ import {Comment, Avatar, Form, Button, List, Input, Layout} from 'antd';
 
 const {Content} = Layout;
 const {TextArea} = Input;
+const UUID = '772c9859-4dd3-4a0d-b87d-d76b9f43cfa4';
 
-const CommentList = ({messages}) => (
-  <List
-    dataSource={messages}
-    header={`${messages.length} ${messages.length > 1 ? 'replies' : 'reply'}`}
-    itemLayout="horizontal"
-    renderItem={props => <Comment {...props} />}
-  />
-);
+const CommentList = ({messages}) => {
+  return (
+    <List
+      dataSource={messages.map(x => ({
+        ...x,
+        content: <div dangerouslySetInnerHTML={{__html: x.content}}/>
+      }))}
+      header={`${messages.length} ${messages.length > 1 ? 'replies' : 'reply'}`}
+      itemLayout="horizontal"
+      renderItem={props => <Comment {...props} />}
+    />
+  )
+};
 
-const Editor = ({onChange, onSubmit, submitting, value}) => (
+const Editor = ({onChange, onSubmit, onClear, submitting, value}) => (
   <div>
     <Form.Item>
       <TextArea rows={4} onChange={onChange} value={value}/>
@@ -22,27 +28,43 @@ const Editor = ({onChange, onSubmit, submitting, value}) => (
       <Button htmlType="submit" loading={submitting} onClick={onSubmit} type="primary">
         Send
       </Button>
+      <Button style={{float: 'right'}} onClick={onClear} type="primary">
+        All clear
+      </Button>
+
     </Form.Item>
   </div>
 );
+
 
 class Chat extends Component {
   state = {
     messages: [],
     submitting: false,
     value: '',
-    cuid: null
+    cuid: localStorage.getItem('cuid') || null
+  };
+  clear = () => {
+    localStorage.clear();
+    this.setState(
+      {
+        messages: [],
+        cuid: null
+      })
   };
 
-  handleSubmit = async () => {
+  componentDidMount = async () => {
+    this.setState({messages: await JSON.parse(localStorage.getItem('messages')) || []})
+  };
+
+  handleSubmit = async key => {
     if (!this.state.value) {
       return;
     }
 
     this.setState({
-      submitting: true,
+      submitting: true
     });
-    // console.log(this.state.cuid)
     if (!this.state.cuid) {
       const response = await fetch("api/init", {
         headers: {
@@ -50,12 +72,13 @@ class Chat extends Component {
         },
         method: "POST",
         body: JSON.stringify({
-          'uuid': '772c9859-4dd3-4a0d-b87d-d76b9f43cfa4',
+          'uuid': UUID,
 
         })
       });
       let result = await response.json();
       await this.setState({cuid: result.result.cuid});
+      localStorage.setItem('cuid', result.result.cuid)
 
     }
     const response = await fetch("api/request", {
@@ -72,30 +95,30 @@ class Chat extends Component {
     let result = await response.json();
 
 
-    this.setState({
+    await this.setState({
       value: '',
       messages: [
         ...this.state.messages,
         {
           author: 'Вы',
           avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          content: <p>{this.state.value}</p>
+          content: `<p>${this.state.value}</p>`
         }
       ],
     });
-    this.setState({
+    await this.setState({
         submitting: false,
         messages: [
           ...this.state.messages,
           {
             author: 'Бот Наносемантика',
             avatar: 'https://webim.ru/wp-content/uploads/2018/05/logo-og.png',
-            content: <p dangerouslySetInnerHTML={{__html: result.result.result.text.value}}/>
+            content: `<p>${result.response}</p>`//<p dangerouslySetInnerHTML={{__html: result.result.result.text.value}}/>
           }
         ]
       }
-    )
-
+    );
+    localStorage.setItem('messages', JSON.stringify(this.state.messages))
   };
 
   handleChange = e => {
@@ -128,12 +151,14 @@ class Chat extends Component {
               <Editor
                 onChange={this.handleChange}
                 onSubmit={this.handleSubmit}
+                onClear={this.clear}
                 submitting={submitting}
                 value={value}
               />
             }
           />
         </Content>
+
       </div>
     );
   }
