@@ -66,6 +66,7 @@ class Chat extends Component {
       submitting: true
     });
     if (!this.state.cuid) {
+      console.log('in if')
       const response = await fetch("api/init", {
         headers: {
           "Content-Type": "application/json"
@@ -77,9 +78,9 @@ class Chat extends Component {
         })
       });
       let result = await response.json();
+      console.log(result)
       await this.setState({cuid: result.result.cuid});
       localStorage.setItem('cuid', result.result.cuid)
-
     }
     const response = await fetch("api/request", {
       headers: {

@@ -3,16 +3,18 @@ const router = Router();
 const fetch = require('node-fetch');
 
 router.post('/init', async (req, res) => {
+  const uuid = req.body;
   const response = await fetch("https://biz.nanosemantics.ru/api/bat/nkd/json/Chat.init", {
     headers: {
       "Content-Type": "application/json"
     },
     method: "POST",
     body: JSON.stringify({
-      'uuid': '772c9859-4dd3-4a0d-b87d-d76b9f43cfa4',
+      'uuid': uuid.uuid,
     })
   });
   let result = await response.json();
+  console.log(result.result)
   res.json({result: result.result})
 });
 
