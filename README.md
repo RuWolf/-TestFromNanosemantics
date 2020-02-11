@@ -3,7 +3,7 @@
 ## Запуск
 ### Запуск back
 ```
-$ npm server 
+$ npm run server 
 ```
 5000 port
 
